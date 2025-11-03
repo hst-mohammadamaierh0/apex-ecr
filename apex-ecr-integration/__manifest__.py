@@ -1,0 +1,23 @@
+{
+    'name': 'ApexECR Integration',
+    'version': '18.0.1.0.0',
+    'category': 'Sales',
+    'summary': '''Odoo 18 Subsciptions, Odoo 18 Helpdesk, Odoo 18 Sales Subsciptions, Odoo18 Subsciptions, Odoo18 Helpdesk, Odoo subsciptions, Odoo helpdesk, Odoo18, Subsciptions, Helpdesk, Odoo Apps''',
+    'description': '''Odoo 18 Subscriptions & Helpdesk, a comprehensive Odoo module that manages customer contracts for the services of the Helpdesk department.''',
+    'author': 'Amr Mahadeen',
+    'company': 'Hamilton Smart Technologies',
+    'maintainer': 'Amr Mahadeen',
+    'depends': ['base', 'sale_subscription', 'helpdesk', 'sale'],
+    'data': [
+        'security/ir.model.access.csv',
+        'report/ir_actions_report_templates.xml',
+        'report/ir_actions_report.xml',
+        'views/customer_contract_views.xml',
+        'views/customer_contract_menus.xml',
+        'views/helpdesk_ticket_views.xml',
+        'views/customer_contract_crons.xml',
+    ],
+    'license':'LGPL-3',
+    'application': True,
+    'auto-install': True,
+}
