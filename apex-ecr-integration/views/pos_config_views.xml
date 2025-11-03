@@ -1,0 +1,16 @@
+<odoo>
+  <record id="view_pos_config_form_apex" model="ir.ui.view">
+    <field name="name">pos.config.form.apex</field>
+    <field name="model">pos.config</field>
+    <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//group[@name='payments']" position="after">
+        <group string="Apex ECR Integration">
+          <field name="apex_tid"/>
+          <field name="apex_mid"/>
+
+         </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>
