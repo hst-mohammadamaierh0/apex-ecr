@@ -22,6 +22,12 @@ class PosConfig(models.Model):
     apex_secure_key = fields.Char(
         string="Merchant Secure Key",
         help="Secure key for authenticating with Apex ECR.")
+    
+    apex_ecr_test_mode = fields.Boolean(
+        string="Apex ECR Test Mode",
+        default=False,
+        help="Enable this to simulate approved payments without connecting to the real Apex ECR terminal."
+    )
 
 
 
@@ -43,3 +49,6 @@ class PosPaymentMethod(models.Model):
     apex_secure_key = fields.Char(
         string="Merchant Secure Key",
         help="Secure key for authenticating with Apex ECR.")
+    
+    
+

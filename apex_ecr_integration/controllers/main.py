@@ -9,7 +9,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-APPROVED_CODES = {"000", "00", "0", "APPROVED"}  # tune if your gateway uses a different set
+APPROVED_CODES = {"000", "00", "0", "APPROVED"}  # recognized success codes
 
 
 class ApexECRController(http.Controller):
@@ -17,13 +17,16 @@ class ApexECRController(http.Controller):
     @http.route('/pos/apex_send', type='json', auth='user', csrf=False)
     def send_to_ecr(self, amount):
         """
-        Calls Apex ECR SOAP Sale, parses the XML safely, and returns a factual result.
-        Adds verbose server-side logging so you can *see* that the request went out.
+        Handles Apex ECR Sale transaction.
+        If test mode is enabled in POS config, simulates approval.
+        Otherwise, performs a live SOAP request to the ECR endpoint.
         """
         t0 = time.time()
 
-        # 1) Find enabled POS config
-        pos_config = request.env['pos.config'].sudo().search([('apex_ecr_enabled', '=', True)], limit=1)
+        # Get active POS config
+        pos_config = request.env['pos.config'].sudo().search(
+            [('apex_ecr_enabled', '=', True)], limit=1
+        )
         if not pos_config:
             return {
                 'success': False,
@@ -34,15 +37,31 @@ class ApexECRController(http.Controller):
         merchant_key = (pos_config.apex_secure_key or '').strip()
         mid = (pos_config.apex_mid or '').strip()
         tid = (pos_config.apex_tid or '').strip()
+        test_mode = getattr(pos_config, "apex_ecr_test_mode", False)
         currency_code = "400"  # JOD
 
+        # 2️ TEST MODE — always simulate approval
+        if test_mode:
+            _logger.info("[ApexECR][TEST] Simulating approved transaction for amount %.3f", float(amount))
+            time.sleep(1.0)
+            return {
+                'success': True,
+                'message': (
+                    " Transaction Approved (Test Mode)\n"
+                    f"Amount: {float(amount):.3f} JOD\n"
+                    f"Auth Code: 999999\n"
+                    f"Card: ****1234\n"
+                    f"Message: Simulated Approval (No ECR Call)"
+                )
+            }
+
+        # 3️ LIVE MODE — send real SOAP call
         url = "https://188.247.84.45:6610/EcrWebInterface/EcrComInterface.svc"
         headers = {
             "Content-Type": "text/xml; charset=utf-8",
             "SOAPAction": "http://tempuri.org/IEcrComInterface/Sale",
         }
 
-        # 2) Build SOAP payload
         try:
             amt = float(amount)
         except Exception:
@@ -72,7 +91,7 @@ class ApexECRController(http.Controller):
   </soapenv:Body>
 </soapenv:Envelope>""".strip()
 
-        # 3) Send request
+        # 4️ Send request to real ECR
         try:
             _logger.info("[ApexECR] --> POST %s | MID=%s TID=%s Amount=%.3f", url, mid, tid, amt)
             resp = requests.post(url, data=payload, headers=headers, timeout=60, verify=False)
@@ -88,7 +107,7 @@ class ApexECRController(http.Controller):
                 'rtt_ms': int((time.time() - t0) * 1000),
             }
 
-        # 4) Parse SOAP XML response
+        # 5️ Parse SOAP XML response
         try:
             tree = ET.fromstring(resp.text)
             ns = {
@@ -97,16 +116,10 @@ class ApexECRController(http.Controller):
                 "a": "http://schemas.datacontract.org/2004/07/"
             }
 
-            # Find SaleResult block (covers nested structure)
-            sale_result = tree.find(".//tem:SaleResult", ns)
-            if sale_result is None:
-                sale_result = tree.find(".//SaleResult", ns)
+            sale_result = tree.find(".//tem:SaleResult", ns) or tree.find(".//SaleResult", ns)
 
             def get_text(tag):
                 node = sale_result.find(f".//a:{tag}", ns) if sale_result is not None else tree.find(f".//a:{tag}", ns)
-                if node is not None and node.text:
-                    return node.text.strip()
-                node = tree.find(f".//{tag}", ns)
                 return node.text.strip() if node is not None and node.text else None
 
             result_code = get_text("ResultCode")
@@ -118,7 +131,7 @@ class ApexECRController(http.Controller):
             _logger.info("[ApexECR] Parsed XML: Code=%s, Auth=%s, Msg=%s, Amount=%s",
                          result_code, auth_code, result_msg, pos_amount)
 
-            # ✅ Success if any AuthCode or known Approved Code
+            #  Success condition
             if auth_code or (result_code and result_code.strip() in APPROVED_CODES):
                 return {
                     'success': True,
@@ -131,7 +144,7 @@ class ApexECRController(http.Controller):
                     )
                 }
 
-            # ❌ Otherwise, treat as cancelled/declined
+            #  Declined or cancelled
             return {
                 'success': False,
                 'message': (

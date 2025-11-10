@@ -16,7 +16,7 @@ patch(PaymentScreen.prototype, {
         const order = this.currentOrder;
         const amount = order.get_due();
 
-        // 🧠 Validation: amount > 0
+        //  Validation: amount > 0
         if (amount <= 0) {
             this.dialog.add(AlertDialog, {
                 title: "Invalid Amount",
@@ -25,7 +25,7 @@ patch(PaymentScreen.prototype, {
             return;
         }
 
-        // 🔄 Notify user we're starting
+        //  Notify user that connection is starting
         this.notification.add(`Connecting to Apex ECR terminal...`, {
             title: "Apex ECR",
             type: "info",
@@ -34,9 +34,7 @@ patch(PaymentScreen.prototype, {
         try {
             const response = await fetch("/pos/apex_send", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     jsonrpc: "2.0",
                     method: "call",
@@ -45,22 +43,20 @@ patch(PaymentScreen.prototype, {
                 }),
             });
 
-            // 🧩 Parse JSON-RPC safely
+            //  Parse JSON-RPC safely
             const data = await response.json();
             const result = data?.result;
 
-            if (!result) {
-                throw new Error("Invalid response format from server.");
-            }
+            if (!result) throw new Error("Invalid response format from server.");
 
-            // 🧾 Success path
+            //  SUCCESS
             if (result.success) {
-                this.dialog.add(AlertDialog, {
+                this.notification.add(result.message || "Transaction Approved.", {
                     title: "✅ Transaction Approved",
-                    body: result.message || "Payment completed successfully.",
+                    type: "success",
                 });
 
-                // 💳 Automatically register payment
+                //  Add payment line automatically
                 const method =
                     this.payment_methods_from_config.find(pm => pm.use_payment_terminal) ||
                     this.payment_methods_from_config[0];
@@ -72,15 +68,19 @@ patch(PaymentScreen.prototype, {
                     }
                 }
 
-                this.notification.add("Apex ECR transaction approved.", {
-                    title: "Payment Complete",
+                //  Notify success
+                this.notification.add("Payment approved and processing validation...", {
+                    title: "Payment Successful",
                     type: "success",
                 });
 
+                //  Automatically validate order
+                await this.autoValidateOrder(order);
+
             } else {
-                // ❌ Failure or cancel
+                //  Failed / Cancelled
                 this.dialog.add(AlertDialog, {
-                    title: "❌ Transaction Failed or Cancelled",
+                    title: "Transaction Failed or Cancelled ❌",
                     body: result.message || "The terminal declined the transaction.",
                 });
 
@@ -93,11 +93,35 @@ patch(PaymentScreen.prototype, {
         } catch (error) {
             console.error("Apex RPC Error:", error);
             this.dialog.add(AlertDialog, {
-                title: "⚠️ Connection Error",
+                title: " Connection Error",
                 body: `Could not reach Apex terminal.\n${error.message || ""}`,
             });
             this.notification.add("Failed to connect to Apex ECR.", {
                 title: "Network Error",
+                type: "danger",
+            });
+        }
+    },
+
+    async autoValidateOrder(order) {
+        try {
+            await this.validateOrder(true); // instantly validate in POS
+
+            
+            this.notification.add("The order has been successfully validated and closed.", {
+                title: "Order Validated",
+                type: "success",
+            });
+
+        } catch (error) {
+            console.error("Order validation error:", error);
+            this.dialog.add(AlertDialog, {
+                title: " Validation Error",
+                body: "Payment succeeded, but order validation failed.",
+            });
+
+            this.notification.add("Order validation failed after payment.", {
+                title: " Validation Error",
                 type: "danger",
             });
         }

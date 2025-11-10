@@ -9,6 +9,9 @@
                     <field name="apex_ecr_enabled"/>
                     <field name="apex_tid" invisible="not apex_ecr_enabled"/>
                     <field name="apex_mid" invisible="not apex_ecr_enabled"/>
+                    <field name="apex_secure_key"
+                           password="True"
+                           modifiers='{"invisible": [["apex_ecr_enabled", "=", False]]}'/>
                 </group>
             </xpath>
         </field>
