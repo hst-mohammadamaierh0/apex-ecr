@@ -29,7 +29,26 @@ class ApexECRController(http.Controller):
                 'success': False,
                 'source': 'odoo',
                 'message': 'Apex ECR is not enabled for this POS configuration.',
+                'payment_method_id': False,
             }
+
+        payment_methods = pos_config.payment_method_ids.filtered('apex_ecr_enabled')
+        if not payment_methods:
+            return {
+                'success': False,
+                'source': 'odoo',
+                'message': 'Configure exactly one Apex-enabled payment method for this POS.',
+                'payment_method_id': False,
+            }
+        if len(payment_methods) > 1:
+            return {
+                'success': False,
+                'source': 'odoo',
+                'message': 'Only one Apex-enabled payment method can be Apex-enabled per POS configuration.',
+                'payment_method_id': False,
+            }
+
+        payment_method = payment_methods[0]
 
         merchant_key = (pos_config.apex_secure_key or '').strip()
         mid = (pos_config.apex_mid or '').strip()
@@ -46,7 +65,12 @@ class ApexECRController(http.Controller):
         try:
             amt = float(amount)
         except Exception:
-            return {'success': False, 'source': 'odoo', 'message': f'Invalid amount: {amount}'}
+            return {
+                'success': False,
+                'source': 'odoo',
+                'message': f'Invalid amount: {amount}',
+                'payment_method_id': payment_method.id,
+            }
 
         payload = f"""\
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -86,6 +110,7 @@ class ApexECRController(http.Controller):
                 'source': 'http',
                 'message': f'Connection error: {e}',
                 'rtt_ms': int((time.time() - t0) * 1000),
+                'payment_method_id': payment_method.id,
             }
 
         # 4) Parse SOAP XML response
@@ -128,7 +153,8 @@ class ApexECRController(http.Controller):
                         f"Auth Code: {auth_code or 'N/A'}\n"
                         f"Card: {card_number or 'N/A'}\n"
                         f"Message: {result_msg or 'Approved'}"
-                    )
+                    ),
+                    'payment_method_id': payment_method.id,
                 }
 
             # ❌ Otherwise, treat as cancelled/declined
@@ -138,12 +164,14 @@ class ApexECRController(http.Controller):
                     "❌ Transaction Cancelled or Declined\n"
                     f"Code: {result_code or 'N/A'}\n"
                     f"Msg: {result_msg or 'No message'}"
-                )
+                ),
+                'payment_method_id': payment_method.id,
             }
 
         except ET.ParseError as e:
             _logger.warning("Failed to parse Apex ECR response: %s", e)
             return {
                 'success': False,
-                'message': f'Unexpected ECR response format: {resp.text[:500]}'
+                'message': f'Unexpected ECR response format: {resp.text[:500]}',
+                'payment_method_id': payment_method.id,
             }

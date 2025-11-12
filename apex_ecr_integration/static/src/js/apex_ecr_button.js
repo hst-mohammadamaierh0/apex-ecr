@@ -55,15 +55,24 @@ patch(PaymentScreen.prototype, {
 
             // 🧾 Success path
             if (result.success) {
-                this.dialog.add(AlertDialog, {
-                    title: "✅ Transaction Approved",
-                    body: result.message || "Payment completed successfully.",
-                });
+                // this.dialog.add(AlertDialog, {
+                //     title: "✅ Transaction Approved",
+                //     body: result.message || "Payment completed successfully.",
+                // });
 
-                // 💳 Automatically register payment
-                const method =
-                    this.payment_methods_from_config.find(pm => pm.use_payment_terminal) ||
-                    this.payment_methods_from_config[0];
+                // 💳 Automatically register payment with the Apex-enabled method
+                const paymentMethodId = Number(result.payment_method_id);
+                const method = this.payment_methods_from_config.find(
+                    (pm) => pm.id === paymentMethodId
+                );
+
+                if (!method) {
+                    this.dialog.add(AlertDialog, {
+                        title: "Payment Method Missing",
+                        body: "The Apex payment method returned by the server is not available in this POS session.",
+                    });
+                    return;
+                }
 
                 if (method) {
                     const line = order.add_paymentline(method);
@@ -76,6 +85,8 @@ patch(PaymentScreen.prototype, {
                     title: "Payment Complete",
                     type: "success",
                 });
+
+                await this.autoValidateOrder(order);
 
             } else {
                 // ❌ Failure or cancel
@@ -98,6 +109,29 @@ patch(PaymentScreen.prototype, {
             });
             this.notification.add("Failed to connect to Apex ECR.", {
                 title: "Network Error",
+                type: "danger",
+            });
+        }
+    },
+    async autoValidateOrder(order) {
+        try {
+            await this.validateOrder(true); // instantly validate in POS
+
+
+            this.notification.add("The order has been successfully validated and closed.", {
+                title: "Order Validated",
+                type: "success",
+            });
+
+        } catch (error) {
+            console.error("Order validation error:", error);
+            this.dialog.add(AlertDialog, {
+                title: " Validation Error",
+                body: "Payment succeeded, but order validation failed.",
+            });
+
+            this.notification.add("Order validation failed after payment.", {
+                title: " Validation Error",
                 type: "danger",
             });
         }
