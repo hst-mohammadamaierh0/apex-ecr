@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hr_employee_form_inherit_ss" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.social.security</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add employee_code field -->
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="employee_code" placeholder="Enter employee code (e.g., EMP001)"/>
+            </xpath>
+            
+            <!-- Social Security tab -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Social Security">
+                    <field name="social_security_ids">
+                        <list>
+                            <field name="year"/>
+                            <field name="social_security_type"/>
+                            <field name="social_code"/>
+                            <field name="ss_base_salary"/>
+                            <field name="employee_contribution"/>
+                            <field name="company_contribution"/>
+                            <field name="total"/>
+                        </list>
+                    </field>
+                    <button name="action_open_ss_wizard" type="object" string="Generate Social Security Report" class="btn-primary"/>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+</odoo>

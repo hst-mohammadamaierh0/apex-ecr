@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action to open the wizard -->
+    <record id="action_open_social_security_wizard" model="ir.actions.act_window">
+        <field name="name">Social Security Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">social.security.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+    </record>
+
+    <!-- Wizard Form View -->
+    <record id="view_social_security_report_wizard_form" model="ir.ui.view">
+        <field name="name">social.security.report.wizard.form</field>
+        <field name="model">social.security.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Social Security Report">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>Social Security Report</h1>
+                    </div>
+                    <group>
+                        <field name="employee_id" widget="many2one" readonly="1"/>
+                        <field name="year" required="1" string="Select Year for Report"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="print_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

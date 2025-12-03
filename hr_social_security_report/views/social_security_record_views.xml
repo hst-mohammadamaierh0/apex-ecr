@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View for Social Security Records -->
+    <record id="view_social_security_list" model="ir.ui.view">
+        <field name="name">social.security.record.list</field>
+        <field name="model">social.security.record</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="year"/>
+                <field name="employee_id"/>
+                <field name="social_security_type"/>
+                <field name="social_code"/>
+                <field name="ss_base_salary"/>
+                <field name="employee_contribution"/>
+                <field name="company_contribution"/>
+                <field name="total"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View for Social Security Records -->
+    <record id="view_social_security_form" model="ir.ui.view">
+        <field name="name">social.security.record.form</field>
+        <field name="model">social.security.record</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="employee_id"/>
+                        <field name="year"/>
+                        <field name="social_security_type"/>
+                        <field name="social_code"/>
+                        <field name="ss_base_salary"/>
+                        <field name="employee_contribution"/>
+                        <field name="company_contribution"/>
+                        <field name="total"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

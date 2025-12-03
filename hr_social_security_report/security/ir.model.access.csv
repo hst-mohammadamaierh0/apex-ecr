@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_social_security_record,social.security.record,model_social_security_record,base.group_user,1,1,1,1
+access_social_security_wizard,social.security.report.wizard,model_social_security_report_wizard,base.group_user,1,0,0,0

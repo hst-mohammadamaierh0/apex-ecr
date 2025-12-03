@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+        id="action_social_security_report"
+        string="Social Security Report"
+        model="hr.employee"
+        report_type="qweb-pdf"
+        name="hr_social_security_report.social_security_template"
+        paperformat="paperformat_euro"
+        print_report_name="'Social Security Report - %s' % (object.name)"
+    />
+</odoo>
