@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+  <t t-name="ApexECR.PaymentScreenButtons"
+     t-inherit="point_of_sale.PaymentScreenButtons"
+     t-inherit-mode="extension">
+
+    
+    <xpath expr="//button[hasclass('partner-button')]" position="after">
+      <button type="button"
+              class="button highlight apex-ecr-button"
+              t-on-click="() => this.onClickApexECR()">
+        <i class="fa fa-credit-card me-2" role="img" title="Apex ECR"/>
+        Send to Apex ECR
+      </button>
+    </xpath>
+
+  </t>
+</templates>

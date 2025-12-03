@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_config_apex_ecr_form" model="ir.ui.view">
+        <field name="name">pos.config.apex.ecr.form</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet" position="inside">
+                <group string="Apex ECR Settings" col="2">
+                    <!-- Enable Apex ECR -->
+                    <field name="apex_ecr_enabled"/>
+
+                    <!-- Show below only when enabled -->
+                    <field name="apex_tid"
+                           modifiers='{"invisible": [["apex_ecr_enabled", "=", False]]}'/>
+                    <field name="apex_mid"
+                           modifiers='{"invisible": [["apex_ecr_enabled", "=", False]]}'/>
+                    <field name="apex_secure_key"
+                           password="True"
+                           modifiers='{"invisible": [["apex_ecr_enabled", "=", False]]}'/>
+
+                    <!-- New Test Mode checkbox -->
+                    <field name="apex_ecr_test_mode"
+                           modifiers='{"invisible": [["apex_ecr_enabled", "=", False]]}'/>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
