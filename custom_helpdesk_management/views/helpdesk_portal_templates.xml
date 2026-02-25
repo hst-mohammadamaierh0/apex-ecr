@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_helpdesk_ticket_form_inherit_dept" inherit_id="website_helpdesk.ticket_submit_form" name="Helpdesk Ticket Department Smart Filter">
+        <xpath expr="//form//div[1]" position="before">
+            
+            <t t-if="dept_count == 1">
+                <input type="hidden" name="department_id" t-att-value="default_dept_id"/>
+            </t>
+
+            <t t-if="dept_count > 1">
+                <div class="mb-0 py-2 s_website_form_field col-12 s_website_form_required" data-type="many2one" data-model="hr.department">
+                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="department_id">
+                            <span class="s_website_form_label_content">Target Department</span>
+                            <span class="s_website_form_mark"> *</span>
+                        </label>
+                        <div class="col-sm">
+                            <select name="department_id" class="form-select s_website_form_input" required="1">
+                                <option value="">Select Department...</option>
+                                <t t-foreach="departments" t-as="dept">
+                                    <option t-att-value="dept.id">
+                                        <t t-esc="dept.name"/>
+                                    </option>
+                                </t>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

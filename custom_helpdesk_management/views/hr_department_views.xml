@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_department_form_inherit_custom" model="ir.ui.view">
+        <field name="name">hr.department.form.inherit.custom</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="helpdesk_team_id" placeholder="Select the support team..."/>
+                <field name="accessible_department_ids" widget="many2many_tags" placeholder="Who can send tickets here?"/>
+                <field name="dept_category_ids">
+                    <list editable="bottom">
+                        <field name="name" placeholder="e.g. Software, Hardware, Network..."/>
+                    </list>
+                </field>
+            </xpath>
+        </field>
+    </record>
+</odoo>

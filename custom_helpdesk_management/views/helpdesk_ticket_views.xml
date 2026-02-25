@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="helpdesk_ticket_view_form_inherit_dept" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.inherit.dept</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="department_id" options="{'no_create': True, 'no_open': True}"/>
+                <field name="team_member_ids" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="domain">[('id', 'in', team_member_ids)]</attribute>
+                <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='team_id']" position="attributes">
+                <attribute name="domain">[('department_id', '=', department_id)]</attribute>
+                <attribute name="options">{'no_open': True, 'no_create': True}</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="helpdesk_team_view_form_inherit_dept" model="ir.ui.view">
+        <field name="name">helpdesk.team.form.inherit.dept</field>
+        <field name="model">helpdesk.team</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_team_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="department_id" options="{'no_create': True}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
