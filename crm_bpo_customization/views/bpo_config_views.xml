@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bpo_service_tree" model="ir.ui.view">
+        <field name="name">bpo.service.list</field>
+        <field name="model">bpo.service</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_csmena_entity_tree" model="ir.ui.view">
+        <field name="name">csmena.entity.list</field>
+        <field name="model">csmena.entity</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_bpo_config" model="ir.actions.act_window">
+        <field name="name">BPO Configuration</field>
+        <field name="res_model">bpo.service</field>
+        <field name="view_mode">list,form</field> </record>
+
+    <menuitem id="menu_bpo_config_root" 
+              name="BPO Config" 
+              parent="crm.crm_menu_config" 
+              action="action_bpo_config" 
+              sequence="50"/>
+</odoo>

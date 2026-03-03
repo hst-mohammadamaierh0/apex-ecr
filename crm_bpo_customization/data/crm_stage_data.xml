@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="sales_team_bpo" model="crm.team">
+            <field name="name">BPO &amp; Outsourcing Sales Team</field>
+            <field name="sequence">10</field>
+            <field name="use_leads">True</field>
+            <field name="use_opportunities">True</field>
+        </record>
+
+        <record id="stage_bpo_prospect" model="crm.stage">
+            <field name="name">PROSPECT</field>
+            <field name="sequence">1</field>
+            <field name="team_id" ref="sales_team_bpo"/>
+        </record>
+
+        <record id="stage_bpo_discovery" model="crm.stage">
+            <field name="name">Discovery &amp; Scoping</field>
+            <field name="sequence">2</field>
+            <field name="team_id" ref="sales_team_bpo"/>
+        </record>
+
+        <record id="stage_bpo_won" model="crm.stage">
+            <field name="name">WON</field>
+            <field name="sequence">8</field>
+            <field name="is_won">True</field> <field name="team_id" ref="sales_team_bpo"/>
+        </record>
+
+        <record id="stage_bpo_lost" model="crm.stage">
+            <field name="name">LOST</field>
+            <field name="sequence">9</field>
+            <field name="is_won">False</field>
+            <field name="fold">True</field> <field name="team_id" ref="sales_team_bpo"/>
+        </record>
+    </data>
+</odoo>

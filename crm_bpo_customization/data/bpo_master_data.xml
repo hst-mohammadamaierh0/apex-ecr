@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="serv_cc" model="bpo.service">
+            <field name="name">Contact Center Outsourcing</field>
+        </record>
+        <record id="serv_cm" model="bpo.service">
+            <field name="name">Content Moderation Outsourcing</field>
+        </record>
+        <record id="serv_sl" model="bpo.service">
+            <field name="name">Seat Leasing</field>
+        </record>
+        <record id="serv_hr" model="bpo.service">
+            <field name="name">HR Outsourcing</field>
+        </record>
+
+        <record id="chan_in" model="bpo.channel">
+            <field name="name">Inbound</field>
+        </record>
+        <record id="chan_out" model="bpo.channel">
+            <field name="name">Outbound</field>
+        </record>
+        <record id="chan_chat" model="bpo.channel">
+            <field name="name">Chat</field>
+        </record>
+        <record id="chan_email" model="bpo.channel">
+            <field name="name">Email</field>
+        </record>
+
+        <record id="cont_nda" model="bpo.contract.type">
+            <field name="name">NDA</field>
+        </record>
+        <record id="cont_msa" model="bpo.contract.type">
+            <field name="name">MSA</field>
+        </record>
+        <record id="cont_sla" model="bpo.contract.type">
+            <field name="name">SLA</field>
+        </record>
+        <record id="cont_sow" model="bpo.contract.type">
+            <field name="name">SOW</field>
+        </record>
+
+        <record id="obj_price" model="bpo.objection">
+            <field name="name">Price</field>
+        </record>
+        <record id="obj_sla" model="bpo.objection">
+            <field name="name">SLA</field>
+        </record>
+        <record id="obj_scope" model="bpo.objection">
+            <field name="name">Scope</field>
+        </record>
+    </data>
+</odoo>

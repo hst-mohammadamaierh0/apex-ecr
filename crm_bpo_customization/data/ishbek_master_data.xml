@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="ishbek_mod_chatbot" model="ishbek.module">
+            <field name="name">Chatbot</field>
+        </record>
+        <record id="ishbek_mod_pos_sync" model="ishbek.module">
+            <field name="name">POS Sync</field>
+        </record>
+        <record id="ishbek_mod_delivery" model="ishbek.module">
+            <field name="name">Delivery</field>
+        </record>
+        <record id="ishbek_mod_callcenter" model="ishbek.module">
+            <field name="name">Call Center</field>
+        </record>
+        <record id="ishbek_mod_web_app" model="ishbek.module">
+            <field name="name">Website / App</field>
+        </record>
+
+        <record id="ishbek_pos_aqua" model="ishbek.pos.system">
+            <field name="name">Aqua</field>
+        </record>
+        <record id="ishbek_pos_foodics" model="ishbek.pos.system">
+            <field name="name">Foodics</field>
+        </record>
+        <record id="ishbek_pos_micros" model="ishbek.pos.system">
+            <field name="name">Micros</field>
+        </record>
+        <record id="ishbek_pos_tabsense" model="ishbek.pos.system">
+            <field name="name">Tabsense</field>
+        </record>
+
+        <record id="ishbek_del_talabat" model="ishbek.delivery.integration">
+            <field name="name">Talabat</field>
+        </record>
+        <record id="ishbek_del_careem" model="ishbek.delivery.integration">
+            <field name="name">Careem</field>
+        </record>
+    </data>
+</odoo>

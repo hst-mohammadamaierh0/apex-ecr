@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_csmena_entity_user,access.csmena.entity.user,model_csmena_entity,sales_team.group_sale_salesman,1,1,1,1
+access_bpo_service_user,access.bpo.service.user,model_bpo_service,sales_team.group_sale_salesman,1,1,1,1
+access_bpo_channel_user,access.bpo.channel.user,model_bpo_channel,sales_team.group_sale_salesman,1,1,1,1
+access_bpo_contract_type_user,access.bpo.contract.type.user,model_bpo_contract_type,sales_team.group_sale_salesman,1,1,1,1
+access_bpo_objection_user,access.bpo.objection.user,model_bpo_objection,sales_team.group_sale_salesman,1,1,1,1
+access_ishbek_module_user,access.ishbek.module.user,model_ishbek_module,sales_team.group_sale_salesman,1,1,1,1
+access_ishbek_pos_user,access.ishbek.pos.user,model_ishbek_pos_system,sales_team.group_sale_salesman,1,1,1,1
+access_ishbek_delivery_user,access.ishbek.delivery.user,model_ishbek_delivery_integration,sales_team.group_sale_salesman,1,1,1,1
+access_service_change_request_user,service.change.request.user,model_service_change_request,sales_team.group_sale_salesman,1,1,1,0
+access_service_change_request_manager,service.change.request.manager,model_service_change_request,sales_team.group_sale_manager,1,1,1,1

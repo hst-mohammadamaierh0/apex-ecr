@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_bpo_full_v2_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.bpo.full.v2.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="team_id_name" invisible="1"/>
+                <field name="stage_id_name" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="BPO Specifications" name="bpo_specs" 
+                      invisible="not team_id_name or 'BPO' not in team_id_name.upper()">
+                    
+                    <group name="stage_1_2" string="Stage 1 &amp; 2: Prospect &amp; Discovery">
+                        <group>
+                            <field name="contact_role" required="team_id_name and 'BPO' in team_id_name.upper()"/>
+                            <field name="interested_service_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="bpo_country_id" required="team_id_name and 'BPO' in team_id_name.upper()"/>
+                            <field name="bpo_lead_source"/>
+                            <field name="headcount_range" required="team_id_name and 'BPO' in team_id_name.upper()"/>
+                        </group>
+                        <group>
+                            <field name="client_type" required="team_id_name and 'BPO' in team_id_name.upper()"/>
+                            <field name="previous_project_id" 
+                                   invisible="client_type not in ['hc_increase', 'hc_decrease']" 
+                                   required="client_type in ['hc_increase', 'hc_decrease']"/>
+                            <field name="channel_ids" widget="many2many_tags"/>
+                            <field name="languages"/>
+                            <field name="tech_owner"/>
+                            <field name="operating_hours"/>
+                            <field name="expected_start_date"/>
+                        </group>
+                    </group>
+
+                    <group name="stage_3_4" string="Stage 3 &amp; 4: Pricing &amp; Proposal"
+                           invisible="stage_id_name in ['PROSPECT', 'Discovery &amp; Scoping']">
+                        <group>
+                            <field name="proposal_type"/>
+                            <field name="proposal_validity"/>
+                            <field name="currency_id"/>
+                            <field name="submission_deadline"/>
+                        </group>
+                        <group>
+                            <field name="pricing_approved" widget="boolean_toggle" groups="sales_team.group_sale_manager"/>
+                            <field name="approved_by_id" readonly="1"/>
+                            <field name="technical_proposal_id" widget="many2one_binary"/>
+                            <field name="financial_proposal_id" widget="many2one_binary"/>
+                        </group>
+                    </group>
+
+                    <group name="stage_5_6" string="Stage 5 &amp; 6: Negotiation &amp; Verbal Confirmation"
+                           invisible="stage_id_name in ['PROSPECT', 'Discovery &amp; Scoping', 'PRICING &amp; COMMERCIAL APPROVAL', 'PROPOSAL SENT']">
+                        <group>
+                            <field name="objection_ids" widget="many2many_tags"/>
+                            <field name="mod_requested"/>
+                            <field name="mod_approval_status" invisible="not mod_requested"/>
+                            <field name="signed_contract_id" string="Revised Pricing Sheet" 
+                                   invisible="not mod_requested" widget="many2one_binary"/>
+                        </group>
+                        <group>
+                            <field name="verbal_conf_date"/>
+                            <field name="tentative_start_date"/>
+                            <field name="tentative_headcount"/>
+                        </group>
+                    </group>
+
+                    <group name="stage_7" string="Stage 7: Contracting"
+                           invisible="stage_id_name != 'CONTRACTING'">
+                        <group>
+                            <field name="contract_type_ids" widget="many2many_tags"/>
+                            <field name="client_legal_entity"/>
+                            <field name="csmena_entity"/>
+                            <field name="signed_contract_id" string="Client CR / Signed NDA" widget="many2one_binary"/>
+                        </group>
+                        <group>
+                            <field name="payment_terms"/>
+                            <field name="billing_start_date"/>
+                            <field name="signature_status" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+
+                    <group name="stage_9" string="Stage 9: Lost Intelligence" 
+                           invisible="active">
+                        <group>
+                            <field name="bpo_loss_reason_ids" widget="many2many_tags"/>
+                            <field name="competitor_name"/>
+                        </group>
+                        <group>
+                            <field name="competitor_pricing"/>
+                            <field name="bid_cycle_duration" invisible="bpo_lead_source != 'bid'"/>
+                            <field name="bid_cycle_reminder" invisible="bpo_lead_source != 'bid'" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+
+                <page string="ISHBEK Specifications" name="ishbek_specs" 
+                    invisible="not team_id_name or 'ISHBEK' not in team_id_name.upper()">
+                    
+                    <group string="Stage 1 &amp; 2: Opportunity &amp; Demo" 
+                        invisible="team_id_name and 'ISHBEK' not in team_id_name.upper()">
+                        <group>
+                            <field name="restaurant_name" 
+                                required="team_id_name and 'ISHBEK' in team_id_name.upper()"/>
+                            <field name="branch_count" 
+                                required="team_id_name and 'ISHBEK' in team_id_name.upper()"/>
+                            <field name="ishbek_lead_source"/>
+                        </group>
+                        <group>
+                            <field name="demo_conducted"/>
+                            <field name="demo_date" invisible="not demo_conducted" 
+                                required="demo_conducted and team_id_name and 'ISHBEK' in team_id_name.upper()"/>
+                            <field name="use_case_fit"/>
+                            <field name="ishbek_module_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 3 &amp; 4: Proposal &amp; Confirmation" 
+                        invisible="stage_id_name in ['Opportunity', 'DEMO / TECHNICAL DISCOVERY']">
+                        <group>
+                            <field name="expected_start_date" string="Proposal Sent Date"/>
+                            <field name="proposal_validity"/>
+                        </group>
+                        <group>
+                            <field name="technical_proposal_id" string="ISHBEK Commercial Proposal" widget="many2one_binary"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 5 &amp; 6: Onboarding" 
+                        invisible="stage_id_name in ['Opportunity', 'DEMO / TECHNICAL DISCOVERY', 'Send Proposal', 'Client Confirmation']">
+                        <group name="integrations" string="Integrations">
+                            <field name="pos_system_id" options="{'no_create': True}"/>
+                            <field name="delivery_integration_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="integration_status"/>
+                            <field name="challenge_description" 
+                                invisible="integration_status != 'challenge'" 
+                                required="integration_status == 'challenge'"/>
+                        </group>
+                        <group name="menu" string="Menu Setup">
+                            <field name="menu_data_received"/>
+                            <field name="menu_uploaded"/>
+                            <field name="menu_approved"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 7: Go Live"
+                        invisible="stage_id_name in ['Opportunity', 'DEMO / TECHNICAL DISCOVERY', 'Send Proposal', 'Client Confirmation', 'ONBOARDING – INTEGRATIONS', 'ONBOARDING – MENU SETUP']">
+                        <field name="go_live_date"/>
+                        <field name="active_branches"/>
+                    </group>
+
+                    <group string="Stage 8: Billing (Finance-Critical)" 
+                        invisible="stage_id_name != 'SEND INVOICE'">
+                        <group>
+                            <field name="price_per_branch" required="stage_id_name == 'SEND INVOICE'"/>
+                            <field name="ishbek_payment_term" required="stage_id_name == 'SEND INVOICE'"/>
+                            <field name="license_activation_date" required="stage_id_name == 'SEND INVOICE'"/>
+                        </group>
+                        <group>
+                            <field name="billing_contact_name"/>
+                            <field name="billing_contact_email" required="stage_id_name == 'SEND INVOICE'"/>
+                            <field name="signed_contract_id" string="Client CR Document" widget="many2one_binary"/>
+                            <button name="action_ishbek_send_invoice" 
+                                    string="Send Invoice Request to Islam" 
+                                    type="object" class="oe_highlight" 
+                                    confirm="Are you sure you want to trigger the billing request to Islam?"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 9: Lost Reason" invisible="active">
+                        <field name="bpo_loss_reason_ids" widget="many2many_tags" string="Loss Reasons"/>
+                        <field name="competitor_name"/>
+                    </group>
+                </page>
+
+                <page string="DID/SIP Specifications" name="did_sip_specs" 
+                    invisible="not team_id_name or 'DID' not in team_id_name.upper()">
+                    
+                    <group string="Stage 1 &amp; 2: Regulatory &amp; Technical Feasibility">
+                        <group name="did_delivery_info" string="Delivery Details" invisible="team_id_name and 'DID' not in team_id_name.upper()">
+                            <field name="service_delivery_model" 
+                                required="team_id_name and 'DID' in team_id_name.upper()"/>
+                            
+                            <field name="is_third_party_known" 
+                                invisible="service_delivery_model == 'direct'"/>
+                            
+                            <field name="third_party_provider_name" 
+                                invisible="service_delivery_model == 'direct'" 
+                                required="team_id_name and 'DID' in team_id_name.upper() and service_delivery_model != 'direct'"/>
+                            
+                            <field name="dids_country" 
+                                required="team_id_name and 'DID' in team_id_name.upper()"/>
+                        </group>
+                        <group>
+                            <field name="compliance_responsibility"/>
+                            <field name="kyc_owner"/>
+                            <field name="provider_feasibility"/>
+                            <field name="provisioning_lead_time"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 3 &amp; 4: Commercial &amp; Pricing" 
+                        invisible="stage_id_name in ['PROSPECT', 'REGULATORY &amp; FEASIBILITY']">
+                        <group name="commercial_config" string="Commercial Config">
+                            <field name="billing_model"/>
+                            <field name="sla_owner"/>
+                            <field name="has_penalty"/>
+                        </group>
+                        
+                        <group name="tamer_approval" string="Internal Approval (Stage 4)">
+    
+                            <field name="did_pricing_approved" 
+                                string="Pricing Approved Status" 
+                                readonly="1" 
+                                groups="!sales_team.group_sale_manager"/>
+                            
+                            <field name="did_pricing_approved" 
+                                string="Pricing Approved Status" 
+                                groups="sales_team.group_sale_manager"/>
+
+                            <button name="action_did_send_tamer_approval" 
+                                    string="Send to Tamer for Approval" 
+                                    type="object" 
+                                    class="oe_highlight" 
+                                    groups="sales_team.group_sale_salesman"
+                                    invisible="did_pricing_approved or stage_id_name != 'PRICING &amp; INTERNAL APPROVAL'"/>
+
+                            <button name="action_did_approve_pricing" 
+                                    string="Approve Pricing Now" 
+                                    type="object" 
+                                    class="btn-success" 
+                                    groups="sales_team.group_sale_manager"
+                                    invisible="did_pricing_approved or stage_id_name != 'PRICING &amp; INTERNAL APPROVAL'"/>
+
+                            <field name="did_approved_by_id" invisible="not did_pricing_approved" readonly="1"/>
+                            
+                        </group>
+
+                    </group>
+
+                    <group string="Stage 5, 6 &amp; 7: Testing &amp; Acceptance" 
+                        invisible="stage_id_name in ['PROSPECT', 'REGULATORY &amp; FEASIBILITY', 'Commercial configuration', 'PRICING &amp; INTERNAL APPROVAL']">
+                        <group string="Testing Details">
+                            <field name="testing_start_date"/>
+                            <field name="testing_end_date"/>
+                            <field name="testing_conducted_by"/>
+                        </group>
+                        <group string="Acceptance &amp; Contract">
+                            <field name="client_acceptance_required"/>
+                            <field name="testing_completed"/>
+                            <field name="signed_contract_id" string="Final Contract" widget="many2one_binary"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 8: Live &amp; Billing (Finance Notification)" 
+                        invisible="stage_id_name != 'LIVE / BILLING STARTED'">
+                        <group>
+                            <field name="billing_start_date" required="stage_id_name == 'LIVE / BILLING STARTED'"/>
+                            <field name="did_price" required="stage_id_name == 'LIVE / BILLING STARTED'"/>
+                            <field name="channel_count" required="stage_id_name == 'LIVE / BILLING STARTED'"/>
+                            <field name="channel_price" required="stage_id_name == 'LIVE / BILLING STARTED'"/>
+                        </group>
+                        <group>
+                            <field name="local_outbound_fee"/>
+                            <field name="non_local_outbound_fee"/>
+                            <field name="billing_mode"/>
+                            <field name="one_time_fee"/>
+                            <field name="taxes_amount"/>
+                            <separator/>
+                            <button name="action_did_send_invoice" 
+                                    string="Notify Islam (Start Billing)" 
+                                    type="object" class="oe_highlight"
+                                    confirm="This will send the full DID/SIP technical billing sheet to Islam. Proceed?"/>
+                        </group>
+                    </group>
+
+                    <group string="Stage 10: Lost Intelligence" invisible="active">
+                        <field name="bpo_loss_reason_ids" widget="many2many_tags" string="Loss Reasons"/>
+                        <field name="competitor_name" invisible="not competitor_name"/>
+                    </group>
+                </page>
+
+
+
+            </xpath>
+            
+        </field>
+    </record>
+</odoo>

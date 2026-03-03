@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_service_change_request_tree" model="ir.ui.view">
+        <field name="name">service.change.request.tree</field>
+        <field name="model">service.change.request</field>
+        <field name="arch" type="xml">
+            <list string="Service Change Requests" decoration-info="state == 'draft'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'">
+                <field name="name" string="SCR Reference"/>
+                <field name="partner_id"/>
+                <field name="change_type" widget="badge" decoration-info="change_type in ['channel_increase', 'did_add']" decoration-warning="change_type in ['channel_decrease', 'did_remove']" decoration-danger="change_type == 'service_cancellation'"/>
+                <field name="effective_date"/>
+                <field name="billing_impact" sum="Total Billing Impact"/>
+                <field name="state" widget="badge" decoration-warning="state == 'confirmed'" decoration-success="state in ['approved', 'done']"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_service_change_request_form" model="ir.ui.view">
+        <field name="name">service.change.request.form</field>
+        <field name="model">service.change.request</field>
+        <field name="arch" type="xml">
+            <form string="Service Change Request">
+                <header>
+                    <button name="action_confirm" 
+                            string="Confirm &amp; Request Approval" 
+                            type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'draft'"/>
+
+                    <button name="action_approve" 
+                            string="Approve Change (Tamer)" 
+                            type="object" 
+                            class="btn-success" 
+                            invisible="state != 'confirmed'"
+                            groups="sales_team.group_sale_manager"/>
+
+                    <button name="action_done" 
+                            string="Finalize &amp; Notify Islam" 
+                            type="object" 
+                            class="oe_highlight" 
+                            invisible="state != 'approved'" 
+                            confirm="Are you sure you want to close this request and notify Finance (Islam)?"/>
+
+                    <button name="action_cancel" 
+                            string="Reject/Cancel" 
+                            type="object" 
+                            invisible="state in ['done', 'cancel']"
+                            confirm="Are you sure you want to cancel this request?"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <span class="o_form_label">Service Change Request</span>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="service_info" string="Service Information">
+                            <field name="lead_id" options="{'no_create': True, 'no_open': False}" placeholder="Select Won DID Opportunity..."/>
+                            <field name="partner_id"/>
+                            <field name="change_type"/>
+                        </group>
+                        <group name="billing_info" string="Billing &amp; Timing">
+                            <field name="effective_date"/>
+                            <label for="billing_impact"/>
+                            <div class="o_row">
+                                <field name="billing_impact"/>
+                                <field name="currency_id" invisible="1"/>
+                                <span>/ Month</span>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Change Description" name="description">
+                            <group>
+                                <field name="description" placeholder="Explain WHY this change is happening..."/>
+                            </group>
+                        </page>
+                        <page string="Internal Notes" name="internal_notes">
+                            <group>
+                                <field name="internal_notes" placeholder="Private notes for staff and Tamer..."/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_service_change_request_search" model="ir.ui.view">
+        <field name="name">service.change.request.search</field>
+        <field name="model">service.change.request</field>
+        <field name="arch" type="xml">
+            <search string="Search Change Requests">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="lead_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Pending Approval" name="pending" domain="[('state', '=', 'confirmed')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Customer" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Change Type" name="group_type" context="{'group_by': 'change_type'}"/>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_service_change_request" model="ir.actions.act_window">
+        <field name="name">Service Change Requests</field>
+        <field name="res_model">service.change.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_service_change_request_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Service Change Request!
+            </p><p>
+                Manage channel increases, DID additions, and service cancellations here.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_service_management_root" 
+              name="Service Management" 
+              parent="crm.crm_menu_root" 
+              sequence="20"
+              groups="sales_team.group_sale_salesman"/>
+
+    <menuitem id="menu_service_change_request_sub" 
+              name="Change Requests (SCR)" 
+              parent="menu_service_management_root" 
+              action="action_service_change_request" 
+              sequence="10"/>
+</odoo>
